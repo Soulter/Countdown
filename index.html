@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<head>
+    <meta charset="UTF-8">
+    <title>Countdown</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://fastly.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://fastly.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <style>
+        .main {
+            height:100%;
+            padding: 150px;
+            text-align: center;
+            background: #1abc9c;
+            color: white;
+            margin:0 auto;
+        }
+
+        .main h1 {
+            font-size: 60px;
+        }
+        .main select{
+            border: none;
+            outline: none;
+            width: 40%;
+            height: 40px;
+            line-height: 40px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-left: 20px;
+            text-align: center;
+            text-align-last: center;
+        }
+    </style>
+
+</head>
+<body style="background-color: #1abc9c">
+
+    <div class="main" id="app" data-app="true">
+        <h1>
+            {{countdown}}
+        </h1>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div>
+            <template>
+                <v-row align-self="center">
+                    <v-col
+                            cols="2"
+                            sm="6"
+                            md="3"
+                            align-self="center">
+                        <v-menu
+                                v-model="menu2"
+                                :close-on-content-click="false"
+                                :nudge-right="40"
+                                transition="scale-transition"
+                                offset-y
+                                min-width="auto"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                        v-model="date"
+                                        label="选择日期"
+                                        prepend-icon="mdi-calendar"
+                                        readonly
+                                        v-bind="attrs"
+                                        v-on="on"
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                    color="#1E88E5"
+                                    v-model="date"
+                                    @input="menu2 = false"
+                            ></v-date-picker>
+                        </v-menu>
+                    </v-col>
+
+
+                    <v-col cols="2" sm="3" align-self="center">
+                        <v-menu
+                                ref="menu"
+                                v-model="menu3"
+                                :close-on-content-click="false"
+                                :nudge-right="40"
+                                :return-value.sync="time"
+                                transition="scale-transition"
+                                offset-y
+                                max-width="290px"
+                                min-width="290px"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                        v-model="time"
+                                        label="选择时间"
+                                        prepend-icon="mdi-calendar"
+                                        readonly
+                                        v-bind="attrs"
+                                        v-on="on"
+                                ></v-text-field>
+                            </template>
+                            <v-time-picker
+                                    v-if="menu3"
+                                    v-model="time"
+                                    full-width
+                                    color="#1E88E5"
+                                    @click:minute="$refs.menu.save(time)"
+                            ></v-time-picker>
+                        </v-menu>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                </v-row>
+            </template>
+            <v-btn
+                    x-large
+                    color="green lighten-5"
+                    @click="startCountDown"
+            >
+                就这样
+            </v-btn>
+        </div>
+    </div>
+
+</body>
+<script src="https://fastly.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data(){
+            return{
+                date: "",
+                menu2: false,
+                time: "",
+                menu3: false,
+                countdown: "就绪！",
+            }
+        },
+        methods: {
+            startCountDown(){
+                if (this.date === "" || this.time === ""){
+
+                }else{
+                    console.log(this.date +" "+this.time)
+                    let endTime = new Date(this.date + " " + this.time)
+                    // let startTime = new Date()
+                    console.log(endTime)
+                    // console.log(endTime - startTime)
+                    // let duration = endTime - startTime
+                    // let leftd = Math.floor(duration/(1000*60*60*24))  //计算天数
+                    // let lefth = Math.floor(duration/(1000*60*60)%24)  //计算小时数
+                    // let leftm = Math.floor(duration/(1000*60)%60)  //计算分钟数
+                    // let lefts = Math.floor(duration/1000%60);  //计算秒数
+                    let _this = this
+                    setInterval (function () {
+                        _this.countdown = showtime(endTime)
+                    }, 1000);  //反复执行函数本身
+                }
+            }
+        },
+    });
+
+    let showtime = function (end) {
+        let start = new Date()  //获取当前时间
+        let lefttime = end - start,  //距离结束时间的毫秒数
+            leftd = Math.floor(lefttime/(1000*60*60*24)),  //计算天数
+            lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数
+            leftm = Math.floor(lefttime/(1000*60)%60),  //计算分钟数
+            lefts = Math.floor(lefttime/1000%60);  //计算秒数
+        return leftd + "天" + lefth + "时" + leftm + "分" + lefts + "秒";  //返回倒计时的字符串
+    }
+</script>
+
+
+</html>
