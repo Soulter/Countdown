@@ -8,11 +8,15 @@
     <link href="https://fastly.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <style>
+        body
+        {
+            background-image:url('/res/bg.png');
+            background-repeat:no-repeat;
+        }
         .main {
             height:100%;
             padding: 150px;
             text-align: center;
-            background: #1abc9c;
             color: white;
             margin:0 auto;
         }
@@ -32,6 +36,10 @@
             padding-left: 20px;
             text-align: center;
             text-align-last: center;
+        }
+        #picker{
+            margin-left: 30%;
+            margin-right: 30%;
         }
     </style>
 
@@ -57,83 +65,91 @@
         <br>
         <br>
         <br>
-        <br>
 
-        <div>
+        <div id="picker">
             <template>
-                <v-row align-self="center">
-                    <v-col
-                            cols="2"
-                            sm="6"
-                            md="3"
-                            align-self="center">
-                        <v-menu
-                                v-model="menu2"
-                                :close-on-content-click="false"
-                                :nudge-right="40"
-                                transition="scale-transition"
-                                offset-y
-                                min-width="auto"
-                        >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                        v-model="date"
-                                        label="选择日期"
-                                        prepend-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                ></v-text-field>
-                            </template>
-                            <v-date-picker
-                                    color="#1E88E5"
-                                    v-model="date"
-                                    @input="menu2 = false"
-                            ></v-date-picker>
-                        </v-menu>
-                    </v-col>
+                <v-menu
+                        v-model="menu2"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
 
+                >
+                    <template v-slot:activator="{ on, attrs }" >
+                        <v-text-field
+                                color = "#ffffff"
+                                v-model="date"
+                                label="选择日期"
+                                prepend-icon="mdi-calendar"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
 
-                    <v-col cols="2" sm="3" align-self="center">
-                        <v-menu
-                                ref="menu"
-                                v-model="menu3"
-                                :close-on-content-click="false"
-                                :nudge-right="40"
-                                :return-value.sync="time"
-                                transition="scale-transition"
-                                offset-y
-                                max-width="290px"
-                                min-width="290px"
-                        >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                        v-model="time"
-                                        label="选择时间"
-                                        prepend-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                ></v-text-field>
-                            </template>
-                            <v-time-picker
-                                    v-if="menu3"
-                                    v-model="time"
-                                    full-width
-                                    color="#1E88E5"
-                                    @click:minute="$refs.menu.save(time)"
-                            ></v-time-picker>
-                        </v-menu>
-                    </v-col>
-                    <v-spacer></v-spacer>
-                </v-row>
+                        ></v-text-field>
+                    </template>
+                    <v-date-picker
+                            color="#1E88E5"
+                            v-model="date"
+                            @input="menu2 = false"
+                    ></v-date-picker>
+                </v-menu>
+                <v-menu
+                        ref="menu"
+                        v-model="menu3"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        :return-value.sync="time"
+                        transition="scale-transition"
+                        offset-y
+                        max-width="290px"
+                        min-width="290px"
+
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                                v-model="time"
+                                label="选择时间"
+                                prepend-icon="mdi-calendar"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                color = "#ffffff"
+                        ></v-text-field>
+                    </template>
+                    <v-time-picker
+                            v-if="menu3"
+                            v-model="time"
+                            full-width
+                            color="#1E88E5"
+                            @click:minute="$refs.menu.save(time)"
+                    ></v-time-picker>
+                </v-menu>
             </template>
+
+<!--            <template>-->
+<!--                <v-row align-self="center">-->
+<!--                    <v-col-->
+<!--                            cols="2"-->
+<!--                            sm="6"-->
+<!--                            md="3"-->
+<!--                            align-self="center">-->
+
+<!--                    </v-col>-->
+
+
+<!--                    <v-col cols="2" sm="3" align-self="center">-->
+
+<!--                    </v-col>-->
+<!--                </v-row>-->
+<!--            </template>-->
             <v-btn
                     x-large
                     color="green lighten-5"
                     @click="startCountDown"
             >
-                就这样
+                {{startBtn}}
             </v-btn>
         </div>
     </div>
@@ -152,6 +168,7 @@
                 time: "",
                 menu3: false,
                 countdown: "就绪！",
+                startBtn: "就这样",
             }
         },
         methods: {
@@ -159,6 +176,7 @@
                 if (this.date === "" || this.time === ""){
 
                 }else{
+                    this.startBtn = "运行中"
                     console.log(this.date +" "+this.time)
                     let endTime = new Date(this.date + " " + this.time)
                     // let startTime = new Date()
@@ -185,7 +203,28 @@
             lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数
             leftm = Math.floor(lefttime/(1000*60)%60),  //计算分钟数
             lefts = Math.floor(lefttime/1000%60);  //计算秒数
-        return leftd + "天" + lefth + "时" + leftm + "分" + lefts + "秒";  //返回倒计时的字符串
+        let str = ""
+        if (leftd !== 0){
+            str += leftd + "天 "
+        }
+        if (lefth < 10){
+            str += "0"+lefth
+        }else{
+            str += lefth
+        }
+        str += " : "
+        if (leftm < 10){
+            str += "0"+leftm
+        }else{
+            str += leftm
+        }
+        str += " : "
+        if (lefts < 10){
+            str += "0"+lefts
+        }else{
+            str += lefts
+        }
+        return  str
     }
 </script>
 
